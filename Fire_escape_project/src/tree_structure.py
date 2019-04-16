@@ -27,9 +27,10 @@ class EvacNode(Node):
     - a population
     - a max rate
     """
-    def __init__(self, id1, population):
+    def __init__(self, id1, population, max_rate):
         Node.__init__(self, id1)
         self.population=population
+        self.max_rate=max_rate
 
 class Edge:
     """ An Edge is defined by
@@ -66,3 +67,12 @@ class Tree:
 
     def __init__(self, node):
         self.root=node
+
+
+    def find_edge(self, node1, node2):
+        #TODO
+
+    def node_exist(self, node1):
+        node = self.root
+        #TODO
+
