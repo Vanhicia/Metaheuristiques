@@ -22,15 +22,19 @@ class Node:
         self.father=father
 
 
+
+
 class EvacNode(Node):
     """An EvacNode is a Node with
     - a population
     - a max rate
     """
+
     def __init__(self, id1, population, max_rate):
         Node.__init__(self, id1)
         self.population=population
         self.max_rate=max_rate
+
 
 class Edge:
     """ An Edge is defined by
@@ -47,7 +51,7 @@ class Edge:
         self.length = -1
         self.capacity = -1
 
-     def __init__(self, father, son, due_date, length, capacity):
+    def __init__(self, father, son, due_date, length, capacity):
          self.father=father
          self.son= son
          self.due_date=due_date
@@ -63,16 +67,26 @@ class Edge:
 class Tree:
     """A Tree is defined by
         - its root (node)
-        """
+    """
 
     def __init__(self, node):
         self.root=node
 
-
+    # Return None if not found
+    # Return the edge if found
     def find_edge(self, node1, node2):
         #TODO
 
-    def node_exist(self, node1):
-        node = self.root
+    # Have one id and check if the tree contains a node with this id
+    # Return a boolean (True or False)
+    def node_exist(self, id_node):
         #TODO
 
+
+    # Return the node which has the given id
+    def get_node_by_id(self, id_node):
+        #TODO
+
+    # Print the tree in the console
+    def print_tree(self):
+        #TODO
