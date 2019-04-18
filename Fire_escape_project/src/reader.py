@@ -88,8 +88,6 @@ def update_one_edge_info(tree, node1, node2, due_date, length, capacity):
     edge = tree.find_edge(node1, node2)
     if edge is not None:  # The edge exists
         edge.add_info(due_date, length, capacity)  # We update its info
-    else:
-        raise Exception("Error : The edge does not exist, we cannot update its information.")
 
 # Tests unitaires
 # data_folder = Path("../instances/")
