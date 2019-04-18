@@ -1,0 +1,2 @@
+# Ignore folder named ´.idea´ that is the config for the IDE
+.idea/
