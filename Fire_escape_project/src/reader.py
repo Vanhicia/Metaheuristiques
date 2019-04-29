@@ -68,7 +68,6 @@ def treat_one_evac_node(line, data):
 
     for i in range(0, k):
         id_father = int(evac_node_info[4 + i])
-
         data.add_node(id_father)  # The node is added only if it doesn't exist yet
 
         data.add_arc(id_father, id_son)  # The arc is added only if it doesn't exist yet
@@ -81,9 +80,12 @@ def treat_one_evac_node(line, data):
 # file_to_open = data_folder / "dense_10_30_3_1.full"
 # read_file(file_to_open)
 
-print("ok")
-read = Reader("TD.txt")
-print("ok1")
-read.data.print_tree()
-print("ok2")
 
+# read = Reader("TD.txt")
+# print()
+# read.data.print_tree()
+# print()
+# read.data.print_dict_nodes()
+# print()
+# read.data.print_dict_arcs()
+#

@@ -89,6 +89,17 @@ class Data:
         node = self.nodes[self.safe_node_id]
         node.print_tree()
 
+    def print_dict_nodes(self):
+        print("List of nodes :", end=' ')
+        for key, _ in self.nodes.items():
+            print(key, end=' ')
+        print()
+
+    def print_dict_arcs(self):
+        print("List of arcs :", end=' ')
+        for key, _ in self.arcs.items():
+            print(key, end=' ')
+        print()
 
 class Node:
     """ A Node is defined by
@@ -126,9 +137,9 @@ class Node:
         arc = None
         k = 0
         n = len(self.sons)
-        while arc.equals(None) and k < n:
-            node = self.sons[k]
-            if node.id == node_id:
+        while arc is None and k < n:
+            arc_son = self.sons[k]
+            if arc_son.son.id == node_id:
                 arc = self.sons[k]
             k += 1
         return arc
@@ -185,9 +196,10 @@ class Arc:
         self.length = length
         self.capacity = capacity
 
-        # Add the arc in the structure of both implied nodes
-        self.father.add_arc_successor(self)
-        self.son.set_father(self)
+        # Add the arc in the structure of both implied nodes if it not exists
+        if self.father.find_arc_successor(son_id) is None:
+            self.father.add_arc_successor(self)
+            self.son.set_father(self)
 
     def add_info(self, due_date, length, capacity):
         self.due_date = due_date
@@ -211,22 +223,22 @@ class Arc:
 
 
 # Test
-"""
-if __name__ == '__main__':
-    data = Data(0)
-    data.add_node(0)
-    data.add_node(1)
-    data.add_node(2)
-    data.add_evac_node(3, 10, 5)
-    data.add_evac_node(4, 8, 2)
-    data.add_evac_node(5, 6, 3)
+#
+# if __name__ == '__main__':
+#     data = Data(0)
+#     data.add_node(0)
+#     data.add_node(1)
+#     data.add_node(2)
+#     data.add_evac_node(3, 10, 5)
+#     data.add_evac_node(4, 8, 2)
+#     data.add_evac_node(5, 6, 3)
+#
+#     data.add_arc(0, 1)
+#     data.add_arc(0, 2)
+#     data.add_arc(1, 3)
+#     data.add_arc(1, 4)
+#     data.add_arc(2, 5)
+#
+#     data.print_tree()
 
-    data.add_arc(0, 1)
-    data.add_arc(0, 2)
-    data.add_arc(1, 3)
-    data.add_arc(1, 4)
-    data.add_arc(2, 5)
-
-    data.print_tree()
-"""
 
