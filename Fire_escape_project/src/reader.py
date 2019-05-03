@@ -16,40 +16,40 @@ def get_data_from_file(path):
     # Open the file
     data_folder = Path("../instances/")
     file_to_open = data_folder / path
-    f = open(file_to_open, "r")
+    with open(file_to_open, "r") as f:
 
-    info = 0  # 0 : we are not in a section / 1: we are in evacuation info section / 2: we are in graph info section
-    header = 0  # 0 : we are not on the header / 1: we are on the header of a section (Evacuation info, Graph info)
-    data = None
+        info = 0  # 0 : we are not in a section / 1: we are in evacuation info section / 2: we are in graph info section
+        header = 0  # 0 : we are not on the header / 1: we are on the header of a section (Evacuation info, Graph info)
+        data = None
 
-    for line in f:
-        # We analyze Evacuation info
-        if "c [evacuation info]" in line:
-            info = 1
-            header = 1
-        #  We analyze Graph info
-        elif "c [graph]" in line:
-            info = 2
-            header = 1
-        else:
-            # Evacuation info
-            if info == 1:
-                if header == 1:  # We are on the header: <num evac nodes> <id of safe node>
-                    [_, id_safe_node] = list(map(int, line.split(" ")))
-                    header = 0
-                    data = Data(id_safe_node)
-                else:  # We are on a definition of an evac_node (line)
-                    treat_one_evac_node(line, data)
-
-            # Graph info
-            elif info == 2:
-                if header == 1:  # We are on the header: <num nodes> <num edges>
-                    header = 0
-                else:  # We are on a definition of an edge (line): <node 1> <node 2> <due date> <length> <capacity>
-                    [node1_id, node2_id, due_date, length, capacity] = list(map(int, line.split(" ")))
-                    data.add_arc_info(node1_id, node2_id, due_date, length, capacity)
+        for line in f:
+            # We analyze Evacuation info
+            if "c [evacuation info]" in line:
+                info = 1
+                header = 1
+            #  We analyze Graph info
+            elif "c [graph]" in line:
+                info = 2
+                header = 1
             else:
-                raise Exception("Error : We are not in a section such as Evacuation info or Graph info.")
+                # Evacuation info
+                if info == 1:
+                    if header == 1:  # We are on the header: <num evac nodes> <id of safe node>
+                        [_, id_safe_node] = list(map(int, line.split(" ")))
+                        header = 0
+                        data = Data(id_safe_node)
+                    else:  # We are on a definition of an evac_node (line)
+                        treat_one_evac_node(line, data)
+
+                # Graph info
+                elif info == 2:
+                    if header == 1:  # We are on the header: <num nodes> <num edges>
+                        header = 0
+                    else:  # We are on a definition of an edge (line): <node 1> <node 2> <due date> <length> <capacity>
+                        [node1_id, node2_id, due_date, length, capacity] = list(map(int, line.split(" ")))
+                        data.add_arc_info(node1_id, node2_id, due_date, length, capacity)
+                else:
+                    raise Exception("Error : We are not in a section such as Evacuation info or Graph info.")
     return data
 
 

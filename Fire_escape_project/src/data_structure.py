@@ -101,6 +101,7 @@ class Data:
             print(key, end=' ')
         print()
 
+
 class Node:
     """ A Node is defined by
     - its id
