@@ -4,6 +4,12 @@ from reader import *
 
 
 class Checker:
+    """ Attributes:
+    - instance : file name of the instance
+    - evac_nodes : list for the evac nodes (id, evac_rate, start_date)
+    - valid : true if the solution is valid
+    - objective : value of the objective function
+    """
 
     def __init__(self, path):
 
@@ -34,5 +40,7 @@ class Checker:
 
     def check_solution(self):
         reader = Reader(self.instance)
+        data = reader.data
+
 
         #TODO

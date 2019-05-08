@@ -46,10 +46,13 @@ def get_data_from_file(path):
                     if header == 1:  # We are on the header: <num nodes> <num edges>
                         header = 0
                     else:  # We are on a definition of an edge (line): <node 1> <node 2> <due date> <length> <capacity>
-                        [node1_id, node2_id, due_date, length, capacity] = list(map(int, line.split(" ")))
-                        data.add_arc_info(node1_id, node2_id, due_date, length, capacity)
+                        [node1_id, node2_id, due_date, time, capacity] = list(map(int, line.split(" ")))
+                        data.add_arc_info(node1_id, node2_id, due_date, time, capacity)
                 else:
                     raise Exception("Error : We are not in a section such as Evacuation info or Graph info.")
+
+        data.update_interval()  # We update intervals between evac nodes and arcs
+
     return data
 
 
@@ -70,7 +73,7 @@ def treat_one_evac_node(line, data):
         id_father = int(evac_node_info[4 + i])
         data.add_node(id_father)  # The node is added only if it doesn't exist yet
 
-        data.add_arc(id_father, id_son)  # The arc is added only if it doesn't exist yet
+        data.add_arc(id_father, id_son, id_evac_node)  # The arc is added only if it doesn't exist yet
 
         id_son = id_father
 
@@ -79,8 +82,8 @@ def treat_one_evac_node(line, data):
 # data_folder = Path("../instances/")
 # file_to_open = data_folder / "dense_10_30_3_1.full"
 # read_file(file_to_open)
-
-
+#
+#
 # read = Reader("TD.txt")
 # print()
 # read.data.print_tree()
@@ -88,4 +91,4 @@ def treat_one_evac_node(line, data):
 # read.data.print_dict_nodes()
 # print()
 # read.data.print_dict_arcs()
-#
+

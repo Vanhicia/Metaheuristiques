@@ -1,9 +1,9 @@
 class Data:
     """ Attributes:
-        - a dictionary of nodes
-        - a dictionary of arcs
-        - the id of the safe node
-        - the list of evac node ids
+        - nodes : a dictionary of nodes
+        - arcs: a dictionary of arcs
+        - safe_node_id : the id of the safe node
+        - evac_node_id_list : the list of evac node ids
     """
 
     def __init__(self, id1):
@@ -34,13 +34,16 @@ class Data:
         self.evac_node_id_list.append(id1)
 
     # Add the arc if it doesn't exist yet but the two nodes exist
-    def add_arc(self, father_id, son_id):
+    # And add the evac node (which uses this arc) in the structure of the arc
+    def add_arc(self, father_id, son_id, evac_node_id):
         try:
             # Check both nodes exist
             _node1 = self.nodes[father_id]
             _node2 = self.nodes[son_id]
             # Create the arc if it doesn't exist
             self.arcs.setdefault((father_id, son_id), Arc(self, father_id, son_id))
+            # Add the evac node which uses the arc
+            self.arcs[(father_id, son_id)].add_evac(evac_node_id)
         except KeyError:
             print("add_arc: This arc can't be added")
 
@@ -61,6 +64,17 @@ class Data:
                 # The arc has not been found, it is certainly a useless arc
                 # So we do nothing
                 print("add_arc_info: not info add because the arc doesn't exist")
+
+    # Method called a the end of the creation if the tree
+    # Update intervals between evac nodes and arcs
+    def update_interval(self):
+        for node in self.evac_node_id_list:
+            interval = 0
+            father = self.nodes[node].father
+            while father is not None:
+                father.add_interval_for_evac(node, interval)
+                interval += father.time
+                father = father.father.father
 
     # Return the node id1
     # Return None if it doesn't exist
@@ -104,9 +118,9 @@ class Data:
 
 class Node:
     """ A Node is defined by
-    - its id
-    - the arc which leads to its father
-    - a list of arcs which lead to its sons)
+    - id
+    - father : the arc which leads to its father
+    - sons : a list of arcs which lead to its sons
     """
 
     def __init__(self, id1):
@@ -186,26 +200,34 @@ class Arc:
     """ An Arc is defined by
     - two Node (the father and the son)
     - due date
-    - length
+    - time
     - capacity
+    - evac : a dictionary for the evacuations using this arc (key = node id, info = interval)
     """
 
-    def __init__(self, data, father_id, son_id, due_date=-1, length=-1, capacity=-1):
+    def __init__(self, data, father_id, son_id, due_date=-1, time=-1, capacity=-1):
         self.father = data.nodes[father_id]
         self.son = data.nodes[son_id]
         self.due_date = due_date
-        self.length = length
+        self.time = time
         self.capacity = capacity
+        self.evac = {}
 
-        # Add the arc in the structure of both implied nodes if it not exists
+        # Add the arc in the structure of both implied nodes if it doesn't exist
         if self.father.find_arc_successor(son_id) is None:
             self.father.add_arc_successor(self)
             self.son.set_father(self)
 
-    def add_info(self, due_date, length, capacity):
+    def add_info(self, due_date, time, capacity):
         self.due_date = due_date
-        self.length = length
+        self.time = time
         self.capacity = capacity
+
+    def add_evac(self, id1):
+        self.evac[id1] = 0
+
+    def add_interval_for_evac(self, id1, time):
+        self.evac[id1] = time
 
     def get_father(self):
         return self.father
@@ -216,8 +238,8 @@ class Arc:
     def get_due_date(self):
         return self.due_date
 
-    def get_length(self):
-        return self.length
+    def get_time(self):
+        return self.time
 
     def get_capacity(self):
         return self.capacity
