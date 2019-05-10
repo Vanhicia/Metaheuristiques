@@ -44,6 +44,8 @@ class Checker:
         reader = Reader(self.instance)
         data = reader.data
         arc_nb = len(data.arcs)
+        is_max = False
+        max_end = 0
 
         guant = np.zeros((arc_nb, time_limit))
 
@@ -54,11 +56,16 @@ class Checker:
             print("son = "+str(arc.son.id1))
 
             for id1, interval in arc.evac.items():
+                is_max = False
                 evac_node = data.nodes[id1]
                 evac_info = self.evac_nodes[id1]
 
                 beg = evac_info['start_date'] + interval
                 end = int(beg + (evac_node.population//evac_info['evac_rate']))
+
+                if max_end < (end + arc.time):
+                    is_max = True
+                    max_end = end + arc.time
 
                 print("id evac node = " + str(id1))
                 print("beg = " + str(beg))
@@ -71,15 +78,13 @@ class Checker:
                 rest = evac_node.population % evac_info['evac_rate']
                 if rest != 0:
                     guant[k][end] += rest
+                    if is_max:
+                        max_end += 1
 
             # Check the capacity is not exceeded
             for i in range(time_limit):
                 # If the solution is not valid
                 if arc.capacity < guant[k][i]:
-                    print("The solution is invalid !")
-                    print("i = " + str(i))
-                    print("k = " + str(k))
-                    print("remplissage = " + str(guant[k][i]))
                     if not self.valid:
                         return True
                     else:
@@ -88,6 +93,11 @@ class Checker:
             k += 1
 
         print("The solution is valid")
+        if self.objective == max_end:
+            print("Objective : " + str(max_end))
+        else:
+            print("The objective is wrong : it is %d, instead of %d", max_end, self.objective)
+
         return True
 
 
