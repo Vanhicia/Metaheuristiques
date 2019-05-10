@@ -124,12 +124,12 @@ class Node:
     """
 
     def __init__(self, id1):
-        self.id = id1
+        self.id1 = id1
         self.father = None
         self.sons = []
 
     def get_id(self):
-        return self.id
+        return self.id1
 
     def get_father(self):
         return self.father
@@ -154,7 +154,7 @@ class Node:
         n = len(self.sons)
         while arc is None and k < n:
             arc_son = self.sons[k]
-            if arc_son.son.id == node_id:
+            if arc_son.son.id1 == node_id:
                 arc = self.sons[k]
             k += 1
         return arc
@@ -166,11 +166,11 @@ class Node:
         for i in range(k):
             deb += "        "
 
-        deb += str(self.id) + " -> "
+        deb += str(self.id1) + " -> "
 
         # Print the sons of the node
         for son in self.sons:
-            print(deb + str(son.get_son().id))
+            print(deb + str(son.get_son().id1))
 
         # Recursion
         k += 1
