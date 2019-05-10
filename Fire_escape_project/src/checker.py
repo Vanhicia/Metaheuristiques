@@ -28,8 +28,6 @@ class Checker:
             for k in range(evac_node_nb):
                 id1, evac_rate, start_date = map(int, f.readline().rstrip('\n\r').split(" "))
                 self.evac_nodes[id1] = {"evac_rate": evac_rate, "start_date": start_date}
-                print(id1)
-                print(self.evac_nodes[id1])
 
             valid = f.readline().rstrip('\n\r')
             if valid == "valid":
@@ -52,25 +50,36 @@ class Checker:
         k = 0
         for arc in data.arcs.values():
             print("loop arc")
+            print("father = "+str(arc.father.id1))
+            print("son = "+str(arc.son.id1))
 
             for id1, interval in arc.evac.items():
                 evac_node = data.nodes[id1]
                 evac_info = self.evac_nodes[id1]
 
                 beg = evac_info['start_date'] + interval
-                if evac_node.population % evac_info['evac_rate'] == 0:
-                    end = int(beg + arc.time + (evac_node.population//evac_info['evac_rate']))
-                else:
-                    end = int(beg + arc.time + (evac_node.population // evac_info['evac_rate']) + 1)
+                end = int(beg + (evac_node.population//evac_info['evac_rate']))
+
+                print("id evac node = " + str(id1))
+                print("beg = " + str(beg))
+                print("end = " + str(end))
+                print("rate = " + str(evac_info['evac_rate']))
 
                 for i in range(beg, end):
                     guant[k][i] += evac_info['evac_rate']
 
+                rest = evac_node.population % evac_info['evac_rate']
+                if rest != 0:
+                    guant[k][end] += rest
+
             # Check the capacity is not exceeded
-            for i in range (time_limit):
+            for i in range(time_limit):
                 # If the solution is not valid
                 if arc.capacity < guant[k][i]:
                     print("The solution is invalid !")
+                    print("i = " + str(i))
+                    print("k = " + str(k))
+                    print("remplissage = " + str(guant[k][i]))
                     if not self.valid:
                         return True
                     else:
