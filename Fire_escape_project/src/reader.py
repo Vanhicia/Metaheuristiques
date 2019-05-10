@@ -1,6 +1,6 @@
 from pathlib import Path
 from data_structure import *
-
+from bound import *
 
 class Reader:
 
@@ -84,11 +84,15 @@ def treat_one_evac_node(line, data):
 # read_file(file_to_open)
 #
 #
-# read = Reader("TD.txt")
-# print()
-# read.data.print_tree()
+read = Reader("TD.txt")
+# print(read.data)
+read.data.print_tree()
 # print()
 # read.data.print_dict_nodes()
 # print()
 # read.data.print_dict_arcs()
 
+bound = Bound(read.data)
+print(read.data.evac_node_id_list)
+print("borne inf")
+print(bound.calculate_lower_bound())

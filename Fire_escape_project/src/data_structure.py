@@ -61,9 +61,10 @@ class Data:
                 # Add information about the arc
                 arc.add_info(due_date, length, capacity)
             except KeyError:
+                pass
                 # The arc has not been found, it is certainly a useless arc
                 # So we do nothing
-                print("add_arc_info: not info add because the arc doesn't exist")
+                # print("add_arc_info: not info add because the arc doesn't exist")
 
     # Method called a the end of the creation if the tree
     # Update intervals between evac nodes and arcs
