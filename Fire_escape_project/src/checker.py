@@ -26,7 +26,7 @@ class Checker:
 
             # Evac node information
             for k in range(evac_node_nb):
-                id1, evac_rate, start_date = f.readline().rstrip('\n\r').split(" ")
+                id1, evac_rate, start_date = map(int, f.readline().rstrip('\n\r').split(" "))
                 self.evac_nodes[id1] = {"evac_rate": evac_rate, "start_date": start_date}
                 print(id1)
                 print(self.evac_nodes[id1])
@@ -53,24 +53,16 @@ class Checker:
         for arc in data.arcs.values():
             print("loop arc")
 
-            # debug : print the keys of the dict "evac_nodes"
-            for cle in self.evac_nodes.keys():
-                print(cle)
-
             for id1, interval in arc.evac.items():
-                print("id evac node :")
-                print(id1)
                 evac_node = data.nodes[id1]
                 evac_info = self.evac_nodes[id1]
 
-                beg = evac_info['start_time'] + interval
+                beg = evac_info['start_date'] + interval
                 if evac_node.population % evac_info['evac_rate'] == 0:
                     end = int(beg + arc.time + (evac_node.population//evac_info['evac_rate']))
                 else:
                     end = int(beg + arc.time + (evac_node.population // evac_info['evac_rate']) + 1)
 
-                print("end = ")
-                print(end)
                 for i in range(beg, end):
                     guant[k][i] += evac_info['evac_rate']
 
