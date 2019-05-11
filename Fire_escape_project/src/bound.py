@@ -1,4 +1,4 @@
-
+import math
 class Bound:
     def __init__(self, tree):
         self.tree = tree
@@ -38,9 +38,14 @@ class Bound:
                     coef = int(capacity/size_package_at_start)
 
                     # If the capacity's section is enough to put more people,
-                    # we increase the number of people to evacuate
+                    # we increase the number of people to evacuate for one clock
                     if coef > 1:
                         size_package_at_start *= coef
+
+                    # If the capacity's section is too small
+                    # we decrease the number of people to evacuate for one clock
+                    if size_package_at_start > capacity:
+                        size_package_at_start = math.ceil(population/capacity)
 
                     population -= size_package_at_start
                     arrived_population += size_package_at_start
