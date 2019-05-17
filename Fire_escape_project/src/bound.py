@@ -1,3 +1,5 @@
+import math
+
 
 class Bound:
     def __init__(self, tree):
@@ -17,7 +19,7 @@ class Bound:
         population = node_start.population
         max_rate = node_start.max_rate
 
-        time_to_evacuate = int(population / max_rate)
+        time_to_evacuate = math.ceil(population / max_rate)
 
         while id_start != self.tree.safe_node_id:
             # We get the time of the current section and add it
@@ -38,3 +40,4 @@ class Bound:
 
     def calculate_upper_bound(self):
         pass
+
