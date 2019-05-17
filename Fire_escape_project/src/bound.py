@@ -1,5 +1,3 @@
-import math
-
 
 class Bound:
     def __init__(self, tree):
@@ -8,6 +6,7 @@ class Bound:
         self.upper_bound = None
 
     def get_lower_bound_for_one_evac_node(self, id_evac_node):
+
         clock = 0
 
         # We get information on where to start
@@ -16,56 +15,20 @@ class Bound:
         section = node_start.father
 
         population = node_start.population
-        arrived_population = 0
-        size_package_at_start = 0
+        max_rate = node_start.max_rate
 
-        start = 1
-        coef = 1
+        time_to_evacuate = int(population / max_rate)
 
         while id_start != self.tree.safe_node_id:
-
-            # We get information of the current section
+            # We get the time of the current section and add it
             time = section.time
-            capacity = section.capacity
+            clock += time
 
-            period = 0
+            # We change section
+            id_start = section.get_father().get_id()
+            section = self.tree.find_node(id_start).get_father()
 
-            while period < time:
-                if population > 0:
-                    # We get the number of people we can evacuate for one clock
-                    if start:
-                        size_package_at_start += capacity
-                        start = 0
-
-                    coef = int(capacity/size_package_at_start)
-
-                    # If the capacity's section is enough to put more people,
-                    # we increase the number of people to evacuate for one clock
-                    if coef > 1:
-                        size_package_at_start *= coef
-
-                    # If the capacity's section is too small,
-                    # we decrease the number of people to evacuate for one clock
-                    if size_package_at_start > capacity:
-                        size_package_at_start = math.ceil(population/capacity)
-
-                    population -= size_package_at_start
-                    arrived_population += size_package_at_start
-
-                # We count the time we are in this section
-                period += 1
-
-            clock += period
-
-            if population <= 0:  # We arrived at the end of a section
-                # We reinitialize population variable
-                population = arrived_population
-                arrived_population = 0
-                # We change section
-                id_start = section.get_father().get_id()
-                section = self.tree.find_node(id_start).get_father()
-
-        return clock + int(population/(coef*size_package_at_start))
+        return clock + time_to_evacuate
 
     def calculate_lower_bound(self):
         lower_bound_per_evac_node = []
