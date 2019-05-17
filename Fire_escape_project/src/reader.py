@@ -2,6 +2,7 @@ from pathlib import Path
 from data_structure import *
 from bound import *
 
+
 class Reader:
 
     def __init__(self, path):

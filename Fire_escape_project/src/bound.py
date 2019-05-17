@@ -1,15 +1,16 @@
 import math
 import numpy as np
-
+import time
 
 class Bound:
     def __init__(self, tree):
         self.tree = tree
         self.lower_bound = None
+        self.timestamp_lower_bound = None
         self.upper_bound = None
+        self.timestamp_upper_bound = None
 
     def get_lower_bound_for_one_evac_node(self, id_evac_node):
-
         clock = 0
 
         # We get information on where to start
@@ -24,20 +25,22 @@ class Bound:
 
         while id_start != self.tree.safe_node_id:
             # We get the time of the current section and add it
-            time = section.time
-            clock += time
+            time_section = section.time
+            clock += time_section
 
             # We change section
             id_start = section.get_father().get_id()
             section = self.tree.find_node(id_start).get_father()
-
         return clock + time_to_evacuate
 
     def calculate_lower_bound(self):
         lower_bound_per_evac_node = []
+        start = time.time()
         for id_evac_node in self.tree.evac_node_id_list:
             lower_bound_per_evac_node.append(self.get_lower_bound_for_one_evac_node(id_evac_node))
-        return max(lower_bound_per_evac_node)
+        end = time.time()
+        self.lower_bound = max(lower_bound_per_evac_node)
+        self.timestamp_lower_bound = end - start
 
     def calculate_upper_bound(self):
         time_limit = 1000
