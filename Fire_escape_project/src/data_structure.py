@@ -246,6 +246,14 @@ class Arc:
         return self.capacity
 
 
+class SolutionEvacNode(EvacNode):
+
+    def __init__(self, id1, rate, start_date):
+        Node.__init__(self, id1)
+        self.chosen_rate = rate
+        self.chosen_start_date = start_date
+
+
 # Test
 #
 # if __name__ == '__main__':

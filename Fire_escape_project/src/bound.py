@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 
 class Bound:
@@ -39,5 +40,69 @@ class Bound:
         return max(lower_bound_per_evac_node)
 
     def calculate_upper_bound(self):
-        pass
+        time_limit = 1000
+        data = self.tree
+        time_list = []
 
+        # Compute the min time for each evac node
+        for node_id in data.evac_node_id_list:
+            time = self.get_lower_bound_for_one_evac_node(node_id)
+            time_list.append((node_id, time))
+
+        # Order the list by time
+        time_list = sorted(time_list, key=lambda evac: evac[2], reverse=True)
+
+        t_min = 0
+        t_max = 0
+        gantt = np.zeros((len(data.arcs), time_limit))
+
+        # Create an arc list in order to link the indexes of line matrix with arcs
+        arc_list = []
+        for key in data.arcs.keys():
+            arc_list.append(key)
+
+        for node_id, evac_time in time_list:
+            node = data.nodes[node_id]
+            father = node.father
+            t_min_current = t_min
+            interval = 0
+
+            # look for the start date #
+
+            # for each arc of the evacuation road
+            while father is not None:
+                index_arc = arc_list.index((father.father, father.son))
+                interval += father.evac[node_id]
+
+                # look for the date when the not used capacity is enough
+                for t in range(t_min_current + interval, t_max):
+                    if (father.capacity-gantt[index_arc][t]) < node.max_rate:
+                        t_min_current = t - interval
+
+                # take the next arc of the road evacuation
+                father = father.father.father
+
+            # add the flow for the evaluated evacuation node #
+            # with rate = max_rate and start time = t_min_current
+            father = node.father
+            interval = 0
+            # for each arc of the evacuation road
+            while father is not None:
+                index_arc = arc_list.index((father.father, father.son))
+                interval += father.evac[node_id]
+                entire_gp_nb = node.population//node.max_rate
+                beg = t_min_current + interval
+                end = t_min_current+entire_gp_nb
+                for t in range(beg, end):
+                    gantt[index_arc][t] += node.max_rate
+
+                rest = node.population % node.max_rate
+                if rest != 0:
+                    gantt[index_arc][end] += rest
+                    end += 1
+
+                if t_max < end:
+                    t_max = end
+
+            node.chosen_rate = node.max_rate
+            node.chosen_start_date = t_min_current

@@ -44,7 +44,6 @@ class Checker:
         reader = Reader(self.instance)
         data = reader.data
         arc_nb = len(data.arcs)
-        is_max = False
         max_end = 0
 
         guant = np.zeros((arc_nb, time_limit))
