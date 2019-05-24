@@ -56,10 +56,11 @@ class Solution:
             k += 1
 
         print("The solution is valid")
-        if self.objective == max_end:
-            print("Objective : " + str(max_end))
-        else:
-            print("The objective is wrong : it is %d, instead of %d", max_end, self.objective)
+        if self.objective is not None:
+            if self.objective == max_end:
+                print("Objective : " + str(max_end))
+            else:
+                print("The objective is wrong : it is %d, instead of %d", max_end, self.objective)
 
         return True
 
