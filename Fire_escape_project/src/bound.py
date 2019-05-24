@@ -136,6 +136,7 @@ if __name__ == '__main__':
     read = Reader("TD.txt")
     bound = Bound(read.data)
     bound.calculate_upper_bound()
-    print("objective of the upper bound for the TD isntance:")
+    print("objective of the upper bound for the TD instance:")
     print(bound.upper_bound.objective)
+    bound.upper_bound.check_solution()
     #bound.upper_bound.write_solution("solution_TD_upper_bound")
