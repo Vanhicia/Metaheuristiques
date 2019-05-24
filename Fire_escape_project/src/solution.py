@@ -92,28 +92,28 @@ class Solution:
 
     def write_solution(self):
         file = open("solution_" + self.filename+".txt", "w+")
-        file.write(self.filename)  # Nom de l'instance résolue
-        file.write(str(len(self.data.evac_node_id_list)))  # <nombre de sommets à évacuer>
-        for evac_node in self.data.evac_node_id_list:
+        file.write(self.filename + "\n")  # Nom de l'instance résolue
+        file.write(str(len(self.data.evac_node_id_list)) + "\n")  # <nombre de sommets à évacuer>
+        for evac_node_id in self.data.evac_node_id_list:
             # pour chaque sommet à évacuer :
             # <son identifiant>, <son taux d’évacuation>, <sa date de début d’évacuation>
-            file.write(evac_node.id1 + " " + evac_node.max_rate + " 0")
+            file.write(str(evac_node_id) + " " + str(self.evac_nodes[evac_node_id]['evac_rate']) + " " + str(self.evac_nodes[evac_node_id]['start_date']) + "\n")
 
-            # nature de la solution : <valid ou invalid>
-            if self.is_valid:
-                file.write("valid")
-            else:
-                file.write("invalid")
+        # nature de la solution : <valid ou invalid>
+        if self.is_valid:
+            file.write("valid\n")
+        else:
+            file.write("invalid\n")
 
-            file.write(self.objective)  # <valeur de la fonction objectif>
+        file.write(str(self.objective) + "\n")  # <valeur de la fonction objectif>
 
-            file.write(self.timestamp )   # <temps de calcul>
+        file.write(str(self.timestamp) + "\n")   # <temps de calcul>
 
-            # <méthode> : le nom de la méthode utilisée et la version de l’implémentation
-            file.write(self.method)
+        # <méthode> : le nom de la méthode utilisée et la version de l’implémentation
+        file.write(self.method + "\n")
 
-            # champ libre (paramètre de la méthode, nom du binôme, ....)
-            file.write(self.other)
+        # champ libre (paramètre de la méthode, nom du binôme, ....)
+        file.write(self.other)
 
 
 if __name__ == '__main__':
