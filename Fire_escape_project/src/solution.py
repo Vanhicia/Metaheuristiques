@@ -90,8 +90,10 @@ class Solution:
 
             self.objective = int(f.readline())
 
-    def write_solution(self):
-        file = open("solution_" + self.filename+".txt", "w+")
+    def write_solution(self, solution_filename):
+        data_folder = Path("../solutions/")
+        file_name = solution_filename + ".txt"
+        file = open(data_folder / file_name, "w+")
         file.write(self.filename + "\n")  # Nom de l'instance résolue
         file.write(str(len(self.data.evac_node_id_list)) + "\n")  # <nombre de sommets à évacuer>
         for evac_node_id in self.data.evac_node_id_list:

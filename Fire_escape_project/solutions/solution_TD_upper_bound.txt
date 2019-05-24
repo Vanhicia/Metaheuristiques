@@ -1,0 +1,10 @@
+TD.txt
+3
+1 8 0
+2 5 11
+3 3 22
+valid
+51
+0.000331878662109375
+Upper bound
+Kim-Anh & Alicia

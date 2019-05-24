@@ -102,7 +102,7 @@ class Bound:
                 interval += father.evac[node_id]
                 entire_gp_nb = node.population//node.max_rate
                 beg = t_min_current + interval
-                end = t_min_current+entire_gp_nb
+                end = beg + entire_gp_nb
 
                 if objective < (end + father.time):
                     is_max = True
@@ -121,19 +121,21 @@ class Bound:
                 if t_max < end:
                     t_max = end
 
+                # take the next arc of the road evacuation
+                father = father.father.father
+
             evac_nodes_dict[node_id] = {"evac_rate": node.max_rate, "start_date": t_min_current}
 
         end_prog = time.time()
         timestamp = end_prog - start_prog
 
-        self.upper_bound = Solution(data.filename, data, evac_nodes_dict, True, objective, timestamp, "Upper bound")
+        self.upper_bound = Solution(data.filename, data, evac_nodes_dict, True, objective, timestamp, "Upper bound", "Kim-Anh & Alicia")
 
 
-# if __name__ == '__main__':
-#     read = Reader("TD.txt")
-#     bound = Bound(read.data)
-#     print("read data ok")
-#     bound.calculate_upper_bound()
-#     print("objective of the upper bound :")
-#     print(bound.upper_bound.objective)
-    #bound.upper_bound.write_solution()
+if __name__ == '__main__':
+    read = Reader("TD.txt")
+    bound = Bound(read.data)
+    bound.calculate_upper_bound()
+    print("objective of the upper bound for the TD isntance:")
+    print(bound.upper_bound.objective)
+    #bound.upper_bound.write_solution("solution_TD_upper_bound")
