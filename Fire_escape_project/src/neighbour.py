@@ -1,5 +1,5 @@
 from pathlib import Path
-
+import math
 
 class Neighbour:
 
@@ -9,6 +9,7 @@ class Neighbour:
         self.valid = None
         self.objective = None
         self.list_neighbours = None
+        self.data = None
 
     def set_initial_solution_from_file(self, path):
         data_folder = Path("../solutions/")
@@ -45,4 +46,37 @@ class Neighbour:
         # self.evac_nodes[id1]
         # modif max_rate and start date
         # test different objective functions
+
+    # Return the evac node id for which the evacuation is the last to terminate
+    # according the evacuation info given in parameter
+    def find_critical_evac(self, evac_nodes):
+        max_evac = None
+        max_end = 0
+        for evac_node_id, evac_rate, strat_date in evac_nodes.items():
+            end = self.calculate_end_evac(evac_node_id, evac_rate, strat_date)
+
+            if max_end < end:
+                max_end = end
+                max_evac = evac_node_id
+
+        return max_evac
+
+    # Calculate the end time of the evacuation for the given evac node
+    # warning : this function does not verify if an arc capacity is exceeded
+    def calculate_end_evac(self, evac_node_id, evac_rate, start_date):
+        evac_node = self.data.nodes[evac_node_id]
+        father_arc = evac_node.father
+        father_arc_aux = father_arc
+
+        # look for the last arc of the evacuation road
+        while father_arc.father.id1 != self.data.safe_node_id:
+            father_arc = father_arc_aux
+
+        interval = father_arc.evac[evac_node_id] # interval between the evac node and the safe node
+        end = start_date + interval + math.ceil(evac_node.population / evac_rate)
+
+        return end
+
+
+
 
