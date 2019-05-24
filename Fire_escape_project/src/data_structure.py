@@ -6,11 +6,15 @@ class Data:
         - evac_node_id_list : the list of evac node ids
     """
 
-    def __init__(self, id1):
+    def __init__(self, filename, id1):
+        self.filename = filename
         self.nodes = {}
         self.arcs = {}
         self.safe_node_id = id1
         self.evac_node_id_list = []
+
+    def get_filename(self):
+        return self.filename
 
     def get_nodes(self):
         return self.nodes
@@ -244,14 +248,6 @@ class Arc:
 
     def get_capacity(self):
         return self.capacity
-
-
-class SolutionEvacNode(EvacNode):
-
-    def __init__(self, id1, rate, start_date):
-        Node.__init__(self, id1)
-        self.chosen_rate = rate
-        self.chosen_start_date = start_date
 
 
 # Test

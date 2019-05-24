@@ -38,7 +38,7 @@ def get_data_from_file(path):
                     if header == 1:  # We are on the header: <num evac nodes> <id of safe node>
                         [_, id_safe_node] = list(map(int, line.split(" ")))
                         header = 0
-                        data = Data(id_safe_node)
+                        data = Data(path, id_safe_node)
                     else:  # We are on a definition of an evac_node (line)
                         treat_one_evac_node(line, data)
 
@@ -85,15 +85,15 @@ def treat_one_evac_node(line, data):
 # read_file(file_to_open)
 #
 #
-read = Reader("TD.txt")
-# print(read.data)
-read.data.print_tree()
-# print()
-# read.data.print_dict_nodes()
-# print()
-# read.data.print_dict_arcs()
-
-bound = Bound(read.data)
-print(read.data.evac_node_id_list)
-print("borne inf")
-print(bound.calculate_lower_bound())
+# read = Reader("TD.txt")
+# # print(read.data)
+# read.data.print_tree()
+# # print()
+# # read.data.print_dict_nodes()
+# # print()
+# # read.data.print_dict_arcs()
+#
+# bound = Bound(read.data)
+# print(read.data.evac_node_id_list)
+# print("borne inf")
+# print(bound.calculate_lower_bound())

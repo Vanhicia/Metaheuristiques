@@ -50,10 +50,8 @@ class Solution:
             for i in range(time_limit):
                 # If the solution is not valid
                 if arc.capacity < gantt[k][i]:
-                    if not self.is_valid:
-                        return True
-                    else:
-                        return False
+                    print("The solution is not valid !")
+                    return False
 
             k += 1
 
