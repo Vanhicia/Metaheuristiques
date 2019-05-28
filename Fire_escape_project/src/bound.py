@@ -139,12 +139,33 @@ class Bound:
 
         self.upper_bound = Solution(data.filename, data, evac_nodes_dict, True, objective, timestamp, "Upper bound", "Kim-Anh & Alicia")
 
+    def calculate_upper_bound_version_light(self):
+        start = time.time()
+        start_old = 0
+        lower_bound_per_evac_node = []
+        evac_nodes_dict = {}
+        data = self.tree
+
+        # Add lower bound of all evac nodes in a list and a dictionary
+        for id_evac_node in data.evac_node_id_list:
+            start_deb = self.get_lower_bound_for_one_evac_node(id_evac_node)
+            lower_bound_per_evac_node.append(start)
+            evac_nodes_dict[id_evac_node] = {"evac_rate": data.nodes[id_evac_node].max_rate,
+                                             "start_date": start_old}
+            start_old += start_deb
+
+        end = time.time()
+        timestamp = end - start
+
+        self.upper_bound = Solution(data.filename, data, evac_nodes_dict, True, start_old, timestamp, "Upper bound", "Kim-Anh & Alicia")
+
 
 # if __name__ == '__main__':
 #     read = Reader("TD.txt")
 #     bound = Bound(read.data)
 #     bound.calculate_lower_bound()
-#     bound.calculate_upper_bound()
+#     # bound.calculate_upper_bound()
+#     bound.calculate_upper_bound_version_light()
 #     print("objective of the lower bound for the TD instance:")
 #     print(bound.lower_bound.objective)
 #     bound.lower_bound.check_solution()
@@ -152,4 +173,4 @@ class Bound:
 #     print("objective of the upper bound for the TD instance:")
 #     print(bound.upper_bound.objective)
 #     bound.upper_bound.check_solution()
-#     # bound.upper_bound.write_solution("solution_TD_upper_bound")
+#     bound.upper_bound.write_solution("solution_TD_upper_bound")
