@@ -1,5 +1,5 @@
 from reader import *
-
+import numpy as np
 
 class Solution:
 
@@ -69,7 +69,7 @@ class Solution:
             if self.objective == max_end:
                 print("Objective : " + str(max_end))
             else:
-                print("The objective is wrong : it is %d, instead of %d", max_end, self.objective)
+                print("The objective is wrong : it is " + str(max_end) +", instead of " + str(self.objective))
 
         return True, max_end
 

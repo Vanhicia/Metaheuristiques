@@ -18,7 +18,7 @@ class Bound:
         # We get information on where to start
         id_start = id_evac_node
         node_start = self.tree.find_node(id_evac_node)
-        section = node_start.father
+        section = node_start.arc_father
 
         population = node_start.population
         max_rate = node_start.max_rate
@@ -31,8 +31,8 @@ class Bound:
             clock += time_section
 
             # We change section
-            id_start = section.get_father().get_id()
-            section = self.tree.find_node(id_start).get_father()
+            id_start = (section.father).id_node
+            section = self.tree.find_node(id_start).arc_father
         return clock + time_to_evacuate
 
     def calculate_lower_bound(self):
@@ -81,41 +81,41 @@ class Bound:
 
         for node_id, evac_time in time_list:
             node = data.nodes[node_id]
-            father = node.father
+            arc_father = node.arc_father
             t_min_current = t_min
             interval = 0
 
             # look for the start date #
 
             # for each arc of the evacuation road
-            while father is not None:
-                index_arc = arc_list.index((father.father.id1, father.son.id1))
-                interval += father.evac[node_id]
+            while arc_father is not None:
+                index_arc = arc_list.index((arc_father.father.id_node, arc_father.son.id_node))
+                interval += arc_father.evac[node_id]
 
                 # look for the date when the not used capacity is enough
                 for t in range(t_min_current + interval, t_max):
-                    if (father.capacity-gantt[index_arc][t]) < node.max_rate:
+                    if (arc_father.capacity-gantt[index_arc][t]) < node.max_rate:
                         t_min_current = t - interval
 
                 # take the next arc of the road evacuation
-                father = father.father.father
+                arc_father = arc_father.father.arc_father
 
             # add the flow for the evaluated evacuation node #
             # with rate = max_rate and start time = t_min_current
-            father = node.father
+            arc_father = node.arc_father
             interval = 0
             # for each arc of the evacuation road
-            while father is not None:
+            while arc_father is not None:
                 is_max = False
-                index_arc = arc_list.index((father.father.id1, father.son.id1))
-                interval += father.evac[node_id]
+                index_arc = arc_list.index((arc_father.father.id_node, arc_father.son.id_node))
+                interval += arc_father.evac[node_id]
                 entire_gp_nb = node.population//node.max_rate
                 beg = t_min_current + interval
                 end = beg + entire_gp_nb
 
-                if objective < (end + father.time):
+                if objective < (end + arc_father.time):
                     is_max = True
-                    objective = end + father.time
+                    objective = end + arc_father.time
 
                 for t in range(beg, end):
                     gantt[index_arc][t] += node.max_rate
@@ -131,7 +131,7 @@ class Bound:
                     t_max = end
 
                 # take the next arc of the road evacuation
-                father = father.father.father
+                arc_father = arc_father.father.arc_father
 
             evac_nodes_dict[node_id] = {"evac_rate": node.max_rate, "start_date": t_min_current}
 

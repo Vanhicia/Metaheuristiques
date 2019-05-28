@@ -6,36 +6,21 @@ class Data:
         - evac_node_id_list : the list of evac node ids
     """
 
-    def __init__(self, filename, id1):
+    def __init__(self, filename, id_node):
         self.filename = filename
         self.nodes = {}
         self.arcs = {}
-        self.safe_node_id = id1
+        self.safe_node_id = id_node
         self.evac_node_id_list = []
 
-    def get_filename(self):
-        return self.filename
-
-    def get_nodes(self):
-        return self.nodes
-
-    def get_arcs(self):
-        return self.arcs
-
-    def get_safe_node_id(self):
-        return self.safe_node_id
-
-    def get_evac_node_id_list(self):
-        return self.evac_node_id_list
+    # Add the node if it doesn't exist yet
+    def add_node(self, id_node):
+        self.nodes.setdefault(id_node, Node(id_node))
 
     # Add the node if it doesn't exist yet
-    def add_node(self, id1):
-        self.nodes.setdefault(id1, Node(id1))
-
-    # Add the node if it doesn't exist yet
-    def add_evac_node(self, id1, population, max_rate):
-        self.nodes.setdefault(id1, EvacNode(id1, population, max_rate))
-        self.evac_node_id_list.append(id1)
+    def add_evac_node(self, id_node, population, max_rate):
+        self.nodes.setdefault(id_node, EvacNode(id_node, population, max_rate))
+        self.evac_node_id_list.append(id_node)
 
     # Add the arc if it doesn't exist yet but the two nodes exist
     # And add the evac node (which uses this arc) in the structure of the arc
@@ -51,17 +36,17 @@ class Data:
         except KeyError:
             print("add_arc: This arc can't be added")
 
-    # Add information about the arc between the nodes id1 and id2
+    # Add information about the arc between the nodes id_node and id2
     # The order of the nodes doesn't matter
-    def add_arc_info(self, id1, id2, due_date, length, capacity):
+    def add_arc_info(self, id_node, id2, due_date, length, capacity):
         # Look for the arc
         try:
-            arc = self.arcs[(id1, id2)]
+            arc = self.arcs[(id_node, id2)]
             # Add information about the arc
             arc.add_info(due_date, length, capacity)
         except KeyError:
             try:
-                arc = self.arcs[(id2, id1)]
+                arc = self.arcs[(id2, id_node)]
                 # Add information about the arc
                 arc.add_info(due_date, length, capacity)
             except KeyError:
@@ -75,30 +60,30 @@ class Data:
     def update_interval(self):
         for node in self.evac_node_id_list:
             interval = 0
-            father = self.nodes[node].father
+            father = self.nodes[node].arc_father
             while father is not None:
                 father.add_interval_for_evac(node, interval)
                 interval += father.time
-                father = father.father.father
+                father = father.father.arc_father
 
-    # Return the node id1
+    # Return the node id_node
     # Return None if it doesn't exist
-    def find_node(self, id1):
+    def find_node(self, id_node):
         try:
-            node = self.nodes[id1]
+            node = self.nodes[id_node]
         except KeyError:
             node = None
             print("find_node: This Node has not been found")
         return node
 
-    # Return the arc between the nodes id1 and id2
+    # Return the arc between the nodes id_node and id2
     # Return None if the arc doesn't exist
-    def find_arc(self, id1, id2):
+    def find_arc(self, id_node, id2):
         try:
-            arc = self.arcs[(id1, id2)]
+            arc = self.arcs[(id_node, id2)]
         except KeyError:
             try:
-                arc = self.arcs[(id2, id1)]
+                arc = self.arcs[(id2, id_node)]
             except KeyError:
                 arc = None
                 print("find_arc : this arc has not been found !")
@@ -128,26 +113,17 @@ class Node:
     - sons : a list of arcs which lead to its sons
     """
 
-    def __init__(self, id1):
-        self.id1 = id1
-        self.father = None
+    def __init__(self, id_node):
+        self.id_node = id_node
+        self.arc_father = None
         self.sons = []
-
-    def get_id(self):
-        return self.id1
-
-    def get_father(self):
-        return self.father
-
-    def get_sons(self):
-        return self.sons
 
     def add_arc_successor(self, arc):
         self.sons.append(arc)
 
     def set_father(self, arc):
-        if self.father is None:
-            self.father = arc
+        if self.arc_father is None:
+            self.arc_father = arc
         else:
             print("set_father: This node has already a father")
 
@@ -159,7 +135,7 @@ class Node:
         n = len(self.sons)
         while arc is None and k < n:
             arc_son = self.sons[k]
-            if arc_son.son.id1 == node_id:
+            if arc_son.son.id_node == node_id:
                 arc = self.sons[k]
             k += 1
         return arc
@@ -171,11 +147,11 @@ class Node:
         for i in range(k):
             deb += "        "
 
-        deb += str(self.id1) + " -> "
+        deb += str(self.id_node) + " -> "
 
         # Print the sons of the node
         for son in self.sons:
-            print(deb + str(son.get_son().id1))
+            print(deb + str(son.get_son().id_node))
 
         # Recursion
         k += 1
@@ -189,8 +165,8 @@ class EvacNode(Node):
     - a max rate
     """
 
-    def __init__(self, id1, population, max_rate):
-        Node.__init__(self, id1)
+    def __init__(self, id_node, population, max_rate):
+        Node.__init__(self, id_node)
         self.population = population
         self.max_rate = max_rate
 
@@ -228,11 +204,11 @@ class Arc:
         self.time = time
         self.capacity = capacity
 
-    def add_evac(self, id1):
-        self.evac[id1] = 0
+    def add_evac(self, id_node):
+        self.evac[id_node] = 0
 
-    def add_interval_for_evac(self, id1, time):
-        self.evac[id1] = time
+    def add_interval_for_evac(self, id_node, time):
+        self.evac[id_node] = time
 
     def get_father(self):
         return self.father
