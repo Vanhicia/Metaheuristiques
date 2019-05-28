@@ -24,12 +24,13 @@ class Data:
     def add_evac_node(self, id_node, population, max_rate):
         # self.nodes.setdefault(id1, EvacNode(id1, population, max_rate))
         try:
-            _node = self.nodes[id_node]
+            node = self.nodes[id_node]
+            node.population = population
+            node.max_rate = max_rate
+            self.evac_node_id_list.append(id_node)
         except KeyError:
             self.nodes[id_node] = EvacNode(id_node, population, max_rate)
-
-        self.evac_node_id_list.append(id_node)
-
+            self.evac_node_id_list.append(id_node)
 
     # Add the arc if it doesn't exist yet but the two nodes exist
     # And add the evac node (which uses this arc) in the structure of the arc

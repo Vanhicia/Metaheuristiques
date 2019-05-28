@@ -104,7 +104,7 @@ class Solution:
         data_folder = Path("../solutions/")
         file_name = solution_filename + ".txt"
         file = open(data_folder / file_name, "w+")
-        file.write(self.filename + "\n")  # Nom de l'instance résolue
+        file.write(self.filename.rstrip(".full") + "\n")  # Nom de l'instance résolue
         file.write(str(len(self.data.evac_node_id_list)) + "\n")  # <nombre de sommets à évacuer>
         for evac_node_id in self.data.evac_node_id_list:
             # pour chaque sommet à évacuer :

@@ -17,7 +17,7 @@ class Bound:
 
         # We get information on where to start
         id_start = id_evac_node
-        node_start = self.tree.find_node(id_evac_node)
+        node_start = self.tree.nodes[id_evac_node]
         section = node_start.arc_father
 
         population = node_start.population
