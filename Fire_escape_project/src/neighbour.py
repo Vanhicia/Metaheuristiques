@@ -6,49 +6,67 @@ class Neighbour:
         self.solution = solution
 
     def local_search_with_a_critical_node(self):
-
+        node_critical_old = None
         finished = 0
-        cpt = 0
-        while not finished and cpt <20:
-            cpt += 1
-            print(self.solution.evac_nodes)
+        while not finished:
             # Find the most constraint node
-            node_critical, id_max = self.find_critical_evac(self.solution.evac_nodes)
+            node_critical_current, id_max = self.find_critical_evac(self.solution.evac_nodes)
 
             # Change Max_rate
-            node_rate, max_end_rate = self.change_parameter(1, node_critical, id_max)
+            node_rate, max_end_rate, finished_rate = self.change_parameter(1, node_critical_current, id_max)
 
             # Change Start_date until not valid and stop at the state that is valid
-            node, max_end_start = self.change_parameter(0, node_rate, id_max)
+            node, max_end_start, finished_date = self.change_parameter(0, node_rate, id_max)
+            if finished_rate and finished_date and node_critical_current == node_critical_old:
+                finished = 1
 
-            # if max_end_rate == max_end_start:
-            #     finished = 1
-            #     self.solution.objective = max_end_rate
+            node_critical_old = node_critical_current
+
 
     def change_parameter(self, mode, node, id_max):  # mode : 0 : start date / 1 : max rate
 
+        finished = 0
         old_node = node
         is_valid, max_end = self.solution.check_solution()
+
+        if not is_valid:
+            finished = 1
+
         max_end_old = None
 
-        # Change Start_date until not valid and stop at the state that is valid
-        while is_valid and (max_end !=max_end_old or max_end_old is None):
-            is_valid_old, max_end_old = is_valid, max_end
-            old_node = node
+        # Change Start_date and Max_rate until that is not valid and stop at the state that is valid
+        # or stop when we cannot change more
+        while is_valid and not finished:
+
             if mode:
+                # Change Start_date
                 if node['start_date'] > 0:
                     node["start_date"] -= 1
+                else:
+                    finished = 1
+
             else:
+                # Change Max_rate
                 if node["evac_rate"] > 0 and node["evac_rate"] < self.solution.data.nodes[id_max].max_rate :
-                    node["evac_rate"] +=1
+                    node["evac_rate"] += 1
+                else:
+                    finished = 1
+
             self.solution.evac_nodes.update({id_max : node})
             is_valid, max_end = self.solution.check_solution()
 
+            if not is_valid:
+                finished = 1
+            else:
+                self.solution.objective = max_end
+                old_node = node
+                max_end_old = max_end
+
         node = old_node
         max_end = max_end_old
+
         self.solution.evac_nodes.update({id_max : node})
-        self.solution.objective = max_end
-        return node, max_end
+        return node, max_end, finished
 
     # Return the evac node id for which the evacuation is the last to terminate
     # according the evacuation info given in parameter
@@ -85,11 +103,12 @@ class Neighbour:
 
 if __name__ == '__main__':
     bound = Bound(Reader("TD.txt").data)
+    # bound = Bound(Reader("dense_10_30_3_1_I.full").data)
     bound.calculate_upper_bound()
     bound.upper_bound
     neighbour = Neighbour(bound.upper_bound)
     neighbour.local_search_with_a_critical_node()
-    print(neighbour.solution.write_solution("sol_neighbour"))
+    neighbour.solution.write_solution("sol_neighbour")
 
 
 
