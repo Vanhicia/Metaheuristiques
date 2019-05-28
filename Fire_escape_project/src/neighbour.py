@@ -1,5 +1,6 @@
 from reader import *
 
+
 class Neighbour:
 
     def __init__(self, solution):
@@ -17,56 +18,53 @@ class Neighbour:
 
             # Change Start_date until not valid and stop at the state that is valid
             node, max_end_start, finished_date = self.change_parameter(0, node_rate, id_max)
+
             if finished_rate and finished_date and node_critical_current == node_critical_old:
                 finished = 1
 
             node_critical_old = node_critical_current
 
-
     def change_parameter(self, mode, node, id_max):  # mode : 0 : start date / 1 : max rate
-
         finished = 0
-        old_node = node
-        is_valid, max_end = self.solution.check_solution()
+        old_node = node.copy()
 
-        if not is_valid:
-            finished = 1
+        is_valid, max_end = self.solution.check_solution()
 
         max_end_old = None
 
         # Change Start_date and Max_rate until that is not valid and stop at the state that is valid
         # or stop when we cannot change more
         while is_valid and not finished:
-
             if mode:
                 # Change Start_date
                 if node['start_date'] > 0:
                     node["start_date"] -= 1
                 else:
                     finished = 1
-
             else:
                 # Change Max_rate
-                if node["evac_rate"] > 0 and node["evac_rate"] < self.solution.data.nodes[id_max].max_rate :
+                if 0 < node["evac_rate"] < self.solution.data.nodes[id_max].max_rate:
                     node["evac_rate"] += 1
+
                 else:
                     finished = 1
 
-            self.solution.evac_nodes.update({id_max : node})
             is_valid, max_end = self.solution.check_solution()
 
             if not is_valid:
                 finished = 1
+                if mode :
+                    node["start_date"] += 1
+                else:
+                    node["evac_rate"] -= 1
+                self.solution.evac_nodes.update({id_max: node})
             else:
                 self.solution.objective = max_end
-                old_node = node
+                old_node = node.copy()
                 max_end_old = max_end
 
-        node = old_node
-        max_end = max_end_old
-
-        self.solution.evac_nodes.update({id_max : node})
-        return node, max_end, finished
+        self.solution.evac_nodes.update({id_max : old_node})
+        return node, max_end_old, finished
 
     # Return the evac node id for which the evacuation is the last to terminate
     # according the evacuation info given in parameter
@@ -108,7 +106,7 @@ if __name__ == '__main__':
     bound.upper_bound
     neighbour = Neighbour(bound.upper_bound)
     neighbour.local_search_with_a_critical_node()
-    neighbour.solution.write_solution("sol_neighbour")
+    neighbour.solution.write_solution("ExempleSimple")
 
 
 

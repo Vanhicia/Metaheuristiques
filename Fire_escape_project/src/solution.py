@@ -132,7 +132,6 @@ if __name__ == '__main__':
     solution = Solution()
     solution.read_solution("solution_TD_non_opti.txt")
     print(solution.check_solution())
-    #solution.write_solution()
 
 
 
