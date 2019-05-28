@@ -16,37 +16,43 @@ class Solution:
     # Check if the solution is valid and in this case, if the objective is right
     # Return true and the objective if the solution is valid
     def check_solution(self):
-        time_limit = 1000
-        if self.data is None :
+        time_limit = 10000
+        if self.data is None:
             self.data = Reader(self.filename).data
         arc_nb = len(self.data.arcs)
-        max_end = 0
+        max_end = 0  # To calculate the objective function
 
+        # Matrix which represents the Gantt diagram
+        # Each coefficient of the matrix represents the flow at the arc beginning
         gantt = np.zeros((arc_nb, time_limit))
 
-        k = 0
+        k = 0  # represents the arc index in the matrix
+        # For each arc
         for arc in self.data.arcs.values():
 
+            # For each evacuation crossing this arc
             for id1, interval in arc.evac.items():
-                is_max = False
                 evac_node = self.data.nodes[id1]
                 evac_info = self.evac_nodes[id1]
 
                 beg = evac_info['start_date'] + interval
                 end = int(beg + (evac_node.population//evac_info['evac_rate']))
 
-                if max_end < (end + arc.time):
-                    is_max = True
-                    max_end = end + arc.time
-
+                # Add the flow (of entire groups) in Gantt diagram (from beg to end-1)
                 for i in range(beg, end):
                     gantt[k][i] += evac_info['evac_rate']
 
+                # Add the flow of the last incomplete group if it exists
                 rest = evac_node.population % evac_info['evac_rate']
                 if rest != 0:
                     gantt[k][end] += rest
-                    if is_max:
-                        max_end += 1
+                    # Add 1 to the end date because it is the next interval
+                    # (when the group has finished to cross the arc)
+                    end += 1
+
+                # Verify if the objective function has to be increased
+                if max_end < (end + arc.time):
+                    max_end = end + arc.time
 
             # Check the capacity is not exceeded
             for i in range(time_limit):
@@ -58,6 +64,7 @@ class Solution:
             k += 1
 
         print("The solution is valid")
+        # If the solution is valid, check the objective function
         if self.objective is not None:
             if self.objective == max_end:
                 print("Objective : " + str(max_end))
