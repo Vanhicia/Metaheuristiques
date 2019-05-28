@@ -20,9 +20,9 @@ class Data:
         except KeyError:
             self.nodes[id_node] = Node(id_node)
 
-    # Add the node if it doesn't exist yet
+    # Add the evac node
     def add_evac_node(self, id_node, population, max_rate):
-        # self.nodes.setdefault(id1, EvacNode(id1, population, max_rate))
+        # if the node already exists, we add the evacuation information
         try:
             node = self.nodes[id_node]
             node.population = population

@@ -90,12 +90,12 @@ class Bound:
             # for each arc of the evacuation road
             while arc_father is not None:
                 index_arc = arc_list.index((arc_father.father.id_node, arc_father.son.id_node))
-                interval += arc_father.evac[node_id]
+                interval = arc_father.evac[node_id]
 
                 # look for the date when the not used capacity is enough
-                for t in range(t_min_current + interval, t_max):
-                    if (arc_father.capacity-gantt[index_arc][t]) < node.max_rate:
-                        t_min_current = t - interval
+                for t in range(t_min_current + interval, t_max+1):
+                    if arc_father.capacity < (gantt[index_arc][t] + node.max_rate):
+                        t_min_current = (t+1) - interval
 
                 # take the next arc of the road evacuation
                 arc_father = arc_father.father.arc_father
@@ -108,24 +108,23 @@ class Bound:
             while arc_father is not None:
                 is_max = False
                 index_arc = arc_list.index((arc_father.father.id_node, arc_father.son.id_node))
-                interval += arc_father.evac[node_id]
+                interval = arc_father.evac[node_id]
                 entire_gp_nb = node.population//node.max_rate
                 beg = t_min_current + interval
                 end = beg + entire_gp_nb
 
-                if objective < (end + arc_father.time):
-                    is_max = True
-                    objective = end + arc_father.time
-
                 for t in range(beg, end):
                     gantt[index_arc][t] += node.max_rate
+                    if gantt[index_arc][t] > arc_father.capacity:
+                        print("\n\n\n Erreur capa !!!!!!!!")
 
                 rest = node.population % node.max_rate
                 if rest != 0:
                     gantt[index_arc][end] += rest
                     end += 1
-                    if is_max:
-                        objective += 1
+
+                if objective < (end + arc_father.time):
+                    objective = end + arc_father.time
 
                 if t_max < end:
                     t_max = end
