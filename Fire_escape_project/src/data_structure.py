@@ -15,12 +15,21 @@ class Data:
 
     # Add the node if it doesn't exist yet
     def add_node(self, id_node):
-        self.nodes.setdefault(id_node, Node(id_node))
+        try:
+            _node = self.nodes[id_node]
+        except KeyError:
+            self.nodes[id_node] = Node(id_node)
 
     # Add the node if it doesn't exist yet
     def add_evac_node(self, id_node, population, max_rate):
-        self.nodes.setdefault(id_node, EvacNode(id_node, population, max_rate))
+        # self.nodes.setdefault(id1, EvacNode(id1, population, max_rate))
+        try:
+            _node = self.nodes[id_node]
+        except KeyError:
+            self.nodes[id_node] = EvacNode(id_node, population, max_rate)
+
         self.evac_node_id_list.append(id_node)
+
 
     # Add the arc if it doesn't exist yet but the two nodes exist
     # And add the evac node (which uses this arc) in the structure of the arc
@@ -30,7 +39,10 @@ class Data:
             _node1 = self.nodes[father_id]
             _node2 = self.nodes[son_id]
             # Create the arc if it doesn't exist
-            self.arcs.setdefault((father_id, son_id), Arc(self, father_id, son_id))
+            try:
+                _arc = self.arcs[(father_id, son_id)]
+            except KeyError:
+                self.arcs[(father_id, son_id)] = Arc(self, father_id, son_id)
             # Add the evac node which uses the arc
             self.arcs[(father_id, son_id)].add_evac(evac_node_id)
         except KeyError:

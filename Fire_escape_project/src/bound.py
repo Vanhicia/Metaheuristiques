@@ -54,7 +54,7 @@ class Bound:
                                     timestamp, "Lower bound", "Kim-Anh & Alicia")
 
     def calculate_upper_bound(self):
-        time_limit = 1000
+        time_limit = 10000
         data = self.tree
         time_list = []
         evac_nodes_dict = {}
@@ -63,9 +63,9 @@ class Bound:
         start_prog = time.time()
 
         # Compute the min time for each evac node
-        for node_id in data.evac_node_id_list:
-            time_one_node = self.get_lower_bound_for_one_evac_node(node_id)
-            time_list.append((node_id, time_one_node))
+        for evac_node_id in data.evac_node_id_list:
+            time_one_node = self.get_lower_bound_for_one_evac_node(evac_node_id)
+            time_list.append((evac_node_id, time_one_node))
 
         # Order the list by time
         time_list = sorted(time_list, key=lambda evac: evac[1], reverse=True)
@@ -139,6 +139,7 @@ class Bound:
         timestamp = end_prog - start_prog
 
         self.upper_bound = Solution(data.filename, data, evac_nodes_dict, True, objective, timestamp, "Upper bound", "Kim-Anh & Alicia")
+
 
 if __name__ == '__main__':
     read = Reader("TD.txt")
