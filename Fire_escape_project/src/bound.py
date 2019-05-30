@@ -54,33 +54,46 @@ class Bound:
                                     timestamp, "Lower bound", "Kim-Anh & Alicia")
 
     def calculate_upper_bound(self):
-        time_limit = 10000
+        start_prog = time.time()
+
         data = self.data
         time_list = []
         evac_nodes_dict = {}
-        block_time_per_evac_nodes = {}
         objective = 0
-
-        start_prog = time.time()
+        max_time = 0
+        block_time_per_evac_nodes = {}
 
         for id_evac_node in data.evac_node_id_list:
             data.nodes[id_evac_node].max_rate = self.find_min_capacity(id_evac_node, data.safe_node_id)
+            start_date = self.determine_latest_start(id_evac_node, data.safe_node_id)
+            section = data.nodes[id_evac_node].arc_father
+
             block_time_per_evac_nodes[id_evac_node] = {'block_time': self.get_block_time_for_one_evac_node(id_evac_node),
-                                                       'max_due_date': self.find_max_time_according_due_date(id_evac_node, data.safe_node_id)}
+                                                       'first_due_date': section.due_date,
+                                                       # 'max_due_date': self.find_max_time_according_due_date(id_evac_node, data.safe_node_id),
+                                                       'latest_start_date': start_date}
 
         # Order lis by max_due_time
         time_list = sorted(block_time_per_evac_nodes.items(),
-                                                  key=lambda kv: kv[1]['max_due_date'])
+                           key = lambda kv: (kv[1]['first_due_date'],
+                                             kv[1]['latest_start_date']),
+                           )
+
+        time_limit = 10000
+
+        # TODO Check due date
+        # Order lis by max_due_time
+        # time_list = sorted(block_time_per_evac_nodes.items(),
+        #                    key=lambda kv: kv[1]['max_due_date'])
+
         t_min = 0
         t_max = 0
         gantt = np.zeros((len(data.arcs), time_limit))
 
         # Create an arc list in order to link the indexes of line matrix with arcs
-        arc_list = []
-        for key in data.arcs.keys():
-            arc_list.append(key)
+        arc_list = list(data.arcs.keys())
 
-        for node_id, evac_time in time_list:
+        for node_id, val in time_list:
             node = data.nodes[node_id]
             arc_father = node.arc_father
             node.max_rate = node.max_rate
@@ -94,6 +107,7 @@ class Bound:
 
                 # look for the date when the not used capacity is enough
                 for t in range(t_min_current + interval, t_max+1):
+
                     if arc_father.capacity < (gantt[index_arc][t] + node.max_rate):
                         t_min_current = (t+1) - interval
 
@@ -116,7 +130,7 @@ class Bound:
                 for t in range(beg, end):
                     gantt[index_arc][t] += node.max_rate
                     if gantt[index_arc][t] > arc_father.capacity:
-                        print("\n\n\n Erreur capa !!!!!!!!")
+                        print("Erreur capa !!!!!!!!")
 
                 rest = node.population % node.max_rate
                 if rest != 0:
@@ -154,24 +168,33 @@ class Bound:
             section = self.data.find_node(id_node_current).arc_father
         return min_rate
 
-    # Return the max time that we can evacuate
-    def find_max_time_according_due_date(self, id_evac_node, safe_node_id):
+    def determine_latest_start(self, id_evac_node, safe_node_id):
+        path = []
         id_node_current = id_evac_node
-        section = self.data.nodes[id_evac_node].arc_father
-        max_time = 0
+        section =  self.data.nodes[id_evac_node].arc_father
 
         while id_node_current != safe_node_id:
-            max_time += section.due_date
+            path.append(section)
             id_node_current = (section.father).id_node
             section = self.data.find_node(id_node_current).arc_father
-        return max_time
 
+        path.reverse()
+        start = path[0].due_date
+        last = path[len(path)-1]
+        for arc in path:
+            start -= arc.length
+            if arc.due_date < start:
+                start = arc.due_date
+        return start
 
 if __name__ == '__main__':
 
     # --------- INPUTS ---------  #
+    # filename = "TD"
     # filename = "ExempleSimple"
-    filename = "dense_10_30_3_1_I"
+    # filename = "dense_10_30_3_1_I"
+    # filename = "dense_10_30_3_3_I"
+    filename = "dense_10_30_3_2_I"
     # read = Reader(filename +".txt")
     read = Reader(filename + ".full")
     bound = Bound(read.data)

@@ -14,88 +14,119 @@ class Solution:
         self.method = method
         self.other = other
 
-#     def add_info_in_gantt(self, gantt, id_evac_node, clock):
-#         # We get information on where to start
-#         id_start = id_evac_node
-#         node_start = self.data.nodes[id_evac_node]
-#         section = node_start.arc_father
-#
-#         population = node_start.population
-#         arrived_population = 0
-#         max_rate = node_start.max_rate
-#         index_arc = list(self.data.arcs.keys()).index((section.father.id_node, section.son.id_node))
-#         time_to_evacuate = math.ceil(population / max_rate)
-#
-#         while id_start != self.data.safe_node_id:
-#             # We get the time of the current section and add it
-#             time_section = section.time+clock
-#             while time_section > clock:
-# # gérer pb de capa et c'est bon
-#                     clock += 1
-#                     if gantt[index_arc][clock] == 0 :
-#                         math.ceil(population / section.capacity)
-#
-#                         if section.capacity >= max_rate:
-#                             if population - max_rate > 0:
-#                                 arrived_population += max_rate
-#                                 population -= max_rate
-#                             else :
-#                                 arrived_population += population
-#                                 population = 0
-#                             gantt[index_arc][clock] = arrived_population
-#                         else:
-#                             max_rate = section.capacity
-#                             if population - max_rate > 0:
-#                                 arrived_population += max_rate
-#                                 population -= max_rate
-#                             else :
-#                                 arrived_population += population
-#                                 population = 0
-#                             gantt[index_arc][clock] = arrived_population
-#
-#
-#             # We change section
-#             id_start = (section.father).id_node
-#             section = self.data.find_node(id_start).arc_father
-#             if id_start != self.data.safe_node_id:
-#                 index_arc = list(self.data.arcs.keys()).index((section.father.id_node, section.son.id_node))
-#             population = arrived_population
-#             arrived_population = 0
-#
-#         while time_to_evacuate > 0:
-#             clock += 1
-#             gantt[index_arc][clock] = -1
-#             time_to_evacuate -= 1
-#         return True, clock
-#
-#     def check_solution(self):
-#         res = True
-#         time_limit = 1000
-#         list_bound_clock = []
-#         if self.data is None:
-#             self.data = Reader(self.filename).data
-#
-#         arc_nb = len(self.data.arcs)
-#
-#         gantt = np.zeros((arc_nb, time_limit))
-#
-#         for clock in range (time_limit):
-#             for id_evac_node, value in self.evac_nodes.items():
-#                 if value['start_date'] == clock:
-#                     res, bound_clock = self.add_info_in_gantt(gantt, id_evac_node, clock)
-#                     list_bound_clock.append(bound_clock)
-#                 if not res :
-#                     print("The solution is NOT valid")
-#                     return False, -1
-#         print("The solution is valid")
-#         max_end = max(list_bound_clock)
-#         if self.objective is not None:
-#             print("Objective : " + str(max_end))
-#         return True, max_end
-#
+    # def add_info_in_gantt(self, gantt, id_evac_node, clock, max_due_date):
+    #     # We get information on where to start
+    #     id_start = id_evac_node
+    #     node_start = self.data.nodes[id_evac_node]
+    #     section = node_start.arc_father
+    #
+    #     population = node_start.population
+    #     arrived_population = 0
+    #     max_rate = node_start.max_rate
+    #     index_arc = list(self.data.arcs.keys()).index((section.father.id_node, section.son.id_node))
+    #     time_to_evacuate = math.ceil(population / max_rate)
+    #
+    #     while id_start != self.data.safe_node_id:
+    #         # We get the time of the current section and add it
+    #         time_section = section.length+clock
+    #         while time_section > clock:
+    #                 clock += 1
+    #                 if gantt[index_arc][clock] == 0 :
+    #                     math.ceil(population / section.capacity)
+    #
+    #                     if section.capacity >= max_rate:
+    #                         if population - max_rate > 0:
+    #                             arrived_population += max_rate
+    #                             population -= max_rate
+    #                         else :
+    #                             arrived_population += population
+    #                             population = 0
+    #                         gantt[index_arc][clock] = arrived_population
+    #                     else:
+    #                         max_rate = section.capacity
+    #                         if population - max_rate > 0:
+    #                             arrived_population += max_rate
+    #                             population -= max_rate
+    #                         else :
+    #                             arrived_population += population
+    #                             population = 0
+    #                         gantt[index_arc][clock] = arrived_population
+    #
+    #
+    #         # We change section
+    #         id_start = (section.father).id_node
+    #         section = self.data.find_node(id_start).arc_father
+    #         if id_start != self.data.safe_node_id:
+    #             index_arc = list(self.data.arcs.keys()).index((section.father.id_node, section.son.id_node))
+    #         population = arrived_population
+    #         arrived_population = 0
+    #
+    #     while time_to_evacuate > 0:
+    #         clock += 1
+    #         gantt[index_arc][clock] = -1
+    #         time_to_evacuate -= 1
+    #
+    #     if clock <= max_due_date:
+    #         return True, clock
+    #     else:
+    #         return False, -1
+    #
+    # def check_solution(self):
+    #     res = True
+    #     time_limit = 1000
+    #     list_bound_clock = []
+    #     if self.data is None:
+    #         self.data = Reader(self.filename).data
+    #
+    #     arc_nb = len(self.data.arcs)
+    #
+    #     gantt = np.zeros((arc_nb, time_limit))
+    #
+    #     block_time_per_evac_nodes = {}
+    #
+    #     for clock in range (time_limit):
+    #         for id_evac_node, value in self.evac_nodes.items():
+    #             self.data.nodes[id_evac_node].max_rate = self.find_min_capacity(id_evac_node, self.data.safe_node_id)
+    #             block_time_per_evac_nodes[id_evac_node] = {'max_due_date': self.find_max_time_according_due_date(id_evac_node, self.data.safe_node_id)}
+    #
+    #             if value['start_date'] == clock:
+    #                 res, bound_clock = self.add_info_in_gantt(gantt, id_evac_node, clock, block_time_per_evac_nodes[id_evac_node]['max_due_date'])
+    #                 list_bound_clock.append(bound_clock)
+    #             if not res:
+    #                 print("The solution is not valid")
+    #                 return False, -1
+    #     print("The solution is valid")
+    #     max_end = max(list_bound_clock)
+    #     if self.objective is not None:
+    #         print("Objective : " + str(max_end))
+    #     return True, max_end
 
-
-
+    # # Return the min rate that we can evacuate
+    # def find_min_capacity(self, id_evac_node, safe_node_id):
+    #
+    #     id_node_current = id_evac_node
+    #     min_rate = self.data.nodes[id_evac_node].max_rate
+    #     section = self.data.nodes[id_evac_node].arc_father
+    #
+    #     while id_node_current != safe_node_id:
+    #         if section.capacity < min_rate:
+    #             min_rate = section.capacity
+    #
+    #         id_node_current = (section.father).id_node
+    #         section = self.data.find_node(id_node_current).arc_father
+    #     return min_rate
+    #
+    # # Return the max time that we can evacuate
+    # def find_max_time_according_due_date(self, id_evac_node, safe_node_id):
+    #     id_node_current = id_evac_node
+    #     section = self.data.nodes[id_evac_node].arc_father
+    #     max_time = 0
+    #
+    #     while id_node_current != safe_node_id:
+    #         max_time += section.due_date
+    #         id_node_current = (section.father).id_node
+    #         section = self.data.find_node(id_node_current).arc_father
+    #     return max_time
 
     # Check if the solution is valid and in this case, if the objective is right
     # Return true and the objective if the solution is valid
@@ -109,6 +140,13 @@ class Solution:
         # Matrix which represents the Gantt diagram
         # Each coefficient of the matrix represents the flow at the arc beginning
         gantt = np.zeros((arc_nb, time_limit))
+
+        #  TODO : Check due date
+        # block_time_per_evac_nodes = {}
+        # for id_evac_node in self.data.evac_node_id_list:
+        #     self.data.nodes[id_evac_node].max_rate = self.find_min_capacity(id_evac_node, self.data.safe_node_id)
+        #     block_time_per_evac_nodes[id_evac_node] = {'block_time': self.get_block_time_for_one_evac_node(id_evac_node),
+        #                                                'max_due_date': self.find_max_time_according_due_date(id_evac_node, data.safe_node_id)}
 
         k = 0  # represents the arc index in the matrix
         # For each arc

@@ -103,7 +103,10 @@ if __name__ == '__main__':
 
     # filename = "ExempleSimple"
     filename = "dense_10_30_3_1_I"
-
+    # filename = "dense_10_30_3_2_I"
+    # filename = "dense_10_30_3_3_I"
+    # filename = "sparse_10_30_3_1_I"
+    print("Analyze:  " + filename)
     bound = Bound(Reader(filename + ".full").data)
     bound.calculate_upper_bound()
     # bound.calculate_upper_bound_version_light()
