@@ -100,13 +100,16 @@ class Neighbour:
 
 
 if __name__ == '__main__':
-    bound = Bound(Reader("TD.txt").data)
-    # bound = Bound(Reader("dense_10_30_3_1_I.full").data)
-    bound.calculate_upper_bound_version_light()
-    bound.upper_bound
+
+    # filename = "ExempleSimple"
+    filename = "dense_10_30_3_1_I"
+
+    bound = Bound(Reader(filename + ".full").data)
+    bound.calculate_upper_bound()
+    # bound.calculate_upper_bound_version_light()
     neighbour = Neighbour(bound.upper_bound)
     neighbour.local_search_with_a_critical_node()
-    neighbour.solution.write_solution("ExempleSimple")
+    neighbour.solution.write_solution(filename)
 
 
 

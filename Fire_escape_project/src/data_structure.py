@@ -76,7 +76,7 @@ class Data:
             father = self.nodes[node].arc_father
             while father is not None:
                 father.add_interval_for_evac(node, interval)
-                interval += father.time
+                interval += father.length
                 father = father.father.arc_father
 
     # Return the node id_node
@@ -183,27 +183,21 @@ class EvacNode(Node):
         self.population = population
         self.max_rate = max_rate
 
-    def get_population(self):
-        return self.population
-
-    def get_max_rate(self):
-        return self.max_rate
-
 
 class Arc:
     """ An Arc is defined by
     - two Node (the father and the son)
     - due date
-    - time
+    - length
     - capacity
     - evac : a dictionary for the evacuations using this arc (key = node id, info = interval)
     """
 
-    def __init__(self, data, father_id, son_id, due_date=-1, time=-1, capacity=-1):
+    def __init__(self, data, father_id, son_id, due_date=-1, length=-1, capacity=-1):
         self.father = data.nodes[father_id]
         self.son = data.nodes[son_id]
         self.due_date = due_date
-        self.time = time
+        self.length = length
         self.capacity = capacity
         self.evac = {}
 
@@ -212,31 +206,16 @@ class Arc:
             self.father.add_arc_successor(self)
             self.son.set_father(self)
 
-    def add_info(self, due_date, time, capacity):
+    def add_info(self, due_date, length, capacity):
         self.due_date = due_date
-        self.time = time
+        self.length = length
         self.capacity = capacity
 
     def add_evac(self, id_node):
         self.evac[id_node] = 0
 
-    def add_interval_for_evac(self, id_node, time):
-        self.evac[id_node] = time
-
-    def get_father(self):
-        return self.father
-
-    def get_son(self):
-        return self.son
-
-    def get_due_date(self):
-        return self.due_date
-
-    def get_time(self):
-        return self.time
-
-    def get_capacity(self):
-        return self.capacity
+    def add_interval_for_evac(self, id_node, length):
+        self.evac[id_node] = length
 
 
 # Test
