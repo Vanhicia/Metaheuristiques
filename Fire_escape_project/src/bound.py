@@ -70,7 +70,6 @@ class Bound:
 
             block_time_per_evac_nodes[id_evac_node] = {'block_time': self.get_block_time_for_one_evac_node(id_evac_node),
                                                        'first_due_date': section.due_date,
-                                                       # 'max_due_date': self.find_max_time_according_due_date(id_evac_node, data.safe_node_id),
                                                        'latest_start_date': start_date}
 
         # Order lis by max_due_time
@@ -80,11 +79,6 @@ class Bound:
                            )
 
         time_limit = 10000
-
-        # TODO Check due date
-        # Order lis by max_due_time
-        # time_list = sorted(block_time_per_evac_nodes.items(),
-        #                    key=lambda kv: kv[1]['max_due_date'])
 
         t_min = 0
         t_max = 0
