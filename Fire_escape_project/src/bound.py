@@ -72,7 +72,7 @@ class Bound:
                                                        'first_due_date': section.due_date,
                                                        'latest_start_date': start_date}
 
-        # Order lis by max_due_time
+        # Order list by first_due_date, then latest_start_date
         time_list = sorted(block_time_per_evac_nodes.items(),
                            key = lambda kv: (kv[1]['first_due_date'],
                                              kv[1]['latest_start_date']),
