@@ -5,6 +5,7 @@ class Neighbour:
 
     def __init__(self, solution):
         self.solution = solution
+        self.solution.method = "Neighbourhood search"
 
     def local_search_with_a_critical_node(self):
         node_critical_old = None
@@ -112,7 +113,7 @@ if __name__ == '__main__':
     # bound.calculate_upper_bound_version_light()
     neighbour = Neighbour(bound.upper_bound)
     neighbour.local_search_with_a_critical_node()
-    neighbour.solution.write_solution(filename)
+    neighbour.solution.write_solution(filename + "neighbours")
 
 
 
