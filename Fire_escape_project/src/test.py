@@ -13,11 +13,12 @@ if __name__ == '__main__':
         read = Reader(instance)
         print(instance)
 
-        # Calculate the upper bound
+        # Calculate the lower and upper bound
         bound = Bound(read.data)
+        bound.calculate_lower_bound()
+        bound.lower_bound.write_solution("solution_" + instance.rstrip(".full") + "_lower_bound")
         bound.calculate_upper_bound()
-        bound.upper_bound.write_solution("solution_" + instance.rstrip(".full"))
-        # bound.upper_bound.check_solution()
+        bound.upper_bound.write_solution("solution_" + instance.rstrip(".full") + "_upper_bound")
 
         # Neighborhood search
         neighbour = Neighbour(bound.upper_bound)
