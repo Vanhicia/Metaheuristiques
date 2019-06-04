@@ -18,7 +18,7 @@ class Solution:
     # Check if the solution is valid
     # Return true and the objective if the solution is valid
     # Return false and -1 if not
-    def check_solution(self):
+    def check_solution(self, display=False):
         time_limit = 10000
         if self.data is None:
             self.data = Reader(self.filename).data
@@ -61,15 +61,19 @@ class Solution:
             for i in range(time_limit):
                 # If the solution is not valid
                 if arc.capacity < gantt[k][i]:
-                    print("The solution is not valid !")
+                    if display:
+                        print("The solution is not valid !")
                     return False, -1
 
             k += 1
-        print("The solution is valid")
+
+        if display:
+            print("The solution is valid")
         # If the solution is valid, check the objective function
         if self.objective is not None:
             # if self.objective == max_end:
-                print("Objective : " + str(max_end))
+                if display:
+                    print("Objective : " + str(max_end))
             # else:
             #     print("The objective is wrong : it is " + str(max_end) +", instead of " + str(self.objective))
 

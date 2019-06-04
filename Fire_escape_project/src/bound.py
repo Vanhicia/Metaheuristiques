@@ -3,7 +3,9 @@ import numpy as np
 import time
 from reader import *
 from solution import *
+from random import shuffle
 import collections
+
 
 class Bound:
 
@@ -53,7 +55,7 @@ class Bound:
         self.lower_bound = Solution(data.filename, data, evac_nodes_dict, False, max(lower_bound_per_evac_node),
                                     timestamp, "Lower bound", "Kim-Anh & Alicia")
 
-    def calculate_upper_bound(self):
+    def calculate_upper_bound(self, random=False):
         start_prog = time.time()
 
         data = self.data
@@ -77,6 +79,8 @@ class Bound:
                            key = lambda kv: (kv[1]['first_due_date'],
                                              kv[1]['latest_start_date']),
                            )
+        if random:
+            shuffle(time_list)
 
         time_limit = 10000
 
@@ -180,6 +184,7 @@ class Bound:
             if arc.due_date < start:
                 start = arc.due_date
         return start
+
 
 if __name__ == '__main__':
 
