@@ -71,11 +71,11 @@ class Solution:
             print("The solution is valid")
         # If the solution is valid, check the objective function
         if self.objective is not None:
-            # if self.objective == max_end:
-                if display:
+            if display:
+                if self.objective == max_end:
                     print("Objective : " + str(max_end))
-            # else:
-            #     print("The objective is wrong : it is " + str(max_end) +", instead of " + str(self.objective))
+                else:
+                    print("The objective is wrong : it is " + str(max_end) +", instead of " + str(self.objective))
 
         return True, max_end
 

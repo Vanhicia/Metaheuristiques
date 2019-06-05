@@ -27,5 +27,9 @@ if __name__ == '__main__':
 
         # Diversification search
         div = Diversification(read.data)
-        div.diversify()
-        div.solution.write_solution("solution_" + instance.rstrip(".full") + "_diversification")
+        div.diversify(5)
+        div.solution.write_solution("solution_" + instance.rstrip(".full") + "_diversification_n=5")
+        div.diversify(10)
+        div.solution.write_solution("solution_" + instance.rstrip(".full") + "_diversification_n=10")
+        div.diversify(20)
+        div.solution.write_solution("solution_" + instance.rstrip(".full") + "_diversification_n=20")
