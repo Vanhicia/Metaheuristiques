@@ -151,6 +151,28 @@ class Bound:
 
         self.upper_bound = Solution(data.filename, data, evac_nodes_dict, True, objective, timestamp, "Upper bound", "Kim-Anh & Alicia")
 
+    def calculate_upper_bound_version_light(self):
+        start = time.time()
+        start_old = 0
+        lower_bound_per_evac_node = []
+        evac_nodes_dict = {}
+        data = self.data
+
+        # Add lower bound of all evac nodes in a list and a dictionary
+        for id_evac_node in data.evac_node_id_list:
+            data.nodes[id_evac_node].max_rate = self.find_min_capacity(id_evac_node, data.safe_node_id)
+            start_deb = self.get_block_time_for_one_evac_node(id_evac_node)
+            lower_bound_per_evac_node.append(start)
+            evac_nodes_dict[id_evac_node] = {"evac_rate": data.nodes[id_evac_node].max_rate,
+                                             "start_date": start_old}
+            start_old += start_deb
+
+        end = time.time()
+        timestamp = end - start
+
+        self.upper_bound = Solution(data.filename, data, evac_nodes_dict, True, start_old, timestamp, "Upper bound",
+                                    "Kim-Anh & Alicia")
+
     # Return the min rate that we can evacuate
     def find_min_capacity(self, id_evac_node, safe_node_id):
 
@@ -203,12 +225,12 @@ if __name__ == '__main__':
     print("objective of the lower bound for the " + filename + " instance:")
     print(bound.lower_bound.objective)
     bound.lower_bound.check_solution()
-    bound.lower_bound.write_solution("solution_" + filename + "_lower_bound")
+    #bound.lower_bound.write_solution("solution_" + filename + "_lower_bound")
 
     # ------ UPPER BOUND -------  #
-    bound.calculate_upper_bound()
+    bound.calculate_upper_bound_version_light()
     print("objective of the upper bound for the " + filename + " instance:")
     print(bound.upper_bound.objective)
     bound.upper_bound.check_solution()
-    bound.upper_bound.write_solution("solution_" + filename + "_upper_bound")
+    #bound.upper_bound.write_solution("solution_" + filename + "_upper_bound")
 
