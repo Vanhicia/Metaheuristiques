@@ -87,7 +87,7 @@ class Solution:
 
         with open(file_to_open, "r") as f:
 
-            self.filename = f.readline().rstrip('\n\r') + ".txt"
+            self.filename = f.readline().rstrip('\n\r') + ".full"
             evac_node_nb = int(f.readline())
             self.evac_nodes = {}
 
@@ -135,9 +135,10 @@ class Solution:
 
 
 if __name__ == '__main__':
+    display = True
     solution = Solution()
-    solution.read_solution("solution_TD_non_opti.txt")
-    print(solution.check_solution())
+    solution.read_solution("solution_ExempleSimple_upper_bound.txt")
+    solution.check_solution(display)
 
 
 
